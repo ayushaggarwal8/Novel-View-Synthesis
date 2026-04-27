@@ -1,0 +1,34 @@
+# Core deep learning
+torch>=2.1.0
+torchvision>=0.16.0
+
+# 3D Gaussian Splatting
+# Install with: pip install gsplat --index-url https://docs.gsplat.studio/whl/pt21cu121
+gsplat>=1.3.0
+
+# COLMAP Python bindings
+pycolmap>=0.6.0
+
+# Computer vision & image I/O
+opencv-python>=4.8.0
+Pillow>=10.0.0
+imageio>=2.31.0
+imageio-ffmpeg>=0.4.9
+
+# Scientific computing
+numpy<2.0.0
+scipy>=1.11.0
+
+# ML evaluation
+torchmetrics[image]>=1.2.0
+
+# Visualization & interactive viewer
+viser>=0.1.0
+# nerfview  # install from git: pip install git+https://github.com/nerfstudio-project/nerfview.git
+
+# Utilities
+tqdm>=4.66.0
+tyro>=0.8.8
+PyYAML>=6.0.1
+matplotlib>=3.7.0
+tensorboard>=2.14.0

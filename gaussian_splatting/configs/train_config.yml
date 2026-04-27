@@ -1,0 +1,35 @@
+# 3DGS training configuration
+# These are the defaults used by run_pipeline.sh and 04_train_gsplat.py
+# Override any value by passing the corresponding CLI flag to 04_train_gsplat.py
+
+# Data
+data_factor: 1          # Image downscale factor. Use 2 if CUDA OOM (halves resolution)
+test_every: 8           # Hold out every N-th image for PSNR/SSIM evaluation
+
+# Training
+max_steps: 7000         # Total training iterations. Increase to 15000 for better quality
+sh_degree: 3            # Spherical harmonics degree (0=diffuse only, 3=full view-dependent)
+ssim_lambda: 0.2        # Loss = (1 - ssim_lambda)*L1 + ssim_lambda*SSIM
+
+# Rendering quality
+antialiased: true
+near_plane: 0.01
+far_plane: 200.0
+
+# Densification (DefaultStrategy)
+# Controls how Gaussians are split/cloned/pruned during training
+refine_start_iter: 500
+refine_stop_iter: 5000
+refine_every: 100
+reset_every: 3000         # Opacity reset interval (prevents saturation)
+grow_grad2d: 0.0002
+grow_scale3d: 0.01
+prune_scale3d: 0.1
+
+# Checkpointing
+eval_steps: [3000, 5000, 7000]
+save_steps: [3000, 7000]
+render_traj_path: ellipse   # Built-in trajectory render at end of training
+
+# Logging
+tb_every: 100             # TensorBoard log interval

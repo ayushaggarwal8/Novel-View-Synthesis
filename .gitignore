@@ -205,3 +205,23 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Downloaded third-party example files (fetched by setup.sh)
+gaussian_splatting/third_party/
+
+# Project-specific: large data and outputs
+data/frames/
+data/colmap_workspace/
+data/gsplat_input/
+data/*.mp4
+data/*.mov
+data/*.avi
+outputs/
+*.pt
+*.ply
+*.db
+
+# Diffusion model weights and data (large, downloaded/generated at runtime)
+diffusion_nvs/weights/
+diffusion_nvs/outputs/
+diffusion_nvs/inputs/
