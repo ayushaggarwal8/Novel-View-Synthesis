@@ -1,10 +1,10 @@
-# Pinned for compatibility with PyTorch 2.2.x on macOS
-torch>=2.1.0,<2.3.0
-torchvision>=0.16.0
-diffusers==0.26.3
+# Compatible with Apple Silicon (M2/MPS) and CUDA
+torch>=2.2.0
+torchvision>=0.17.0
+diffusers==0.27.0
 transformers==4.40.2
 accelerate==0.27.0
-huggingface_hub==0.23.4
+huggingface_hub>=0.23.4
 opencv-python>=4.8.0
 Pillow>=10.0.0
 numpy<2.0.0
