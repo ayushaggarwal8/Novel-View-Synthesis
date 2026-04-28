@@ -2,6 +2,7 @@
 """Extract frames from a video for use with COLMAP + 3D Gaussian Splatting."""
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
@@ -14,16 +15,16 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Extract frames from video for NVS pipeline")
     parser.add_argument("--video", required=True, help="Path to input video file")
     parser.add_argument("--output-dir", default="data/frames", help="Output directory for frames")
-    parser.add_argument("--fps-target", type=float, default=0.5,
-                        help="Target frames per second to extract (default: 0.5)")
-    parser.add_argument("--max-frames", type=int, default=150,
-                        help="Maximum number of frames to extract (default: 150)")
+    parser.add_argument("--fps-target", type=float, default=1.0,
+                        help="Target frames per second to extract (default: 1.0)")
+    parser.add_argument("--max-frames", type=int, default=300,
+                        help="Maximum number of frames to extract (default: 300)")
     parser.add_argument("--resize-max", type=int, default=1600,
                         help="Maximum dimension for resizing (default: 1600)")
     parser.add_argument("--quality", type=int, default=95,
                         help="JPEG quality 1-100 (default: 95)")
-    parser.add_argument("--diff-threshold", type=float, default=5.0,
-                        help="Min mean pixel diff (0-255) to keep a frame; filters near-duplicates (default: 5.0)")
+    parser.add_argument("--diff-threshold", type=float, default=2.0,
+                        help="Min mean pixel diff (0-255) to keep a frame; filters near-duplicates (default: 2.0)")
     parser.add_argument("--start-sec", type=float, default=None,
                         help="Start time in seconds (default: beginning of video)")
     parser.add_argument("--end-sec", type=float, default=None,
@@ -72,7 +73,9 @@ def extract_frames(video_path: str, output_dir: str, fps_target: float, max_fram
     print(f"  Redundancy threshold: {diff_threshold}/255 mean pixel diff")
 
     out_dir = Path(output_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    if out_dir.exists():
+        shutil.rmtree(out_dir)
+    out_dir.mkdir(parents=True)
 
     cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
@@ -109,11 +112,11 @@ def extract_frames(video_path: str, output_dir: str, fps_target: float, max_fram
     print(f"\nExtracted {saved_count} frames → {out_dir}/")
 
     if saved_count < 30:
-        print(f"WARNING: Only {saved_count} frames extracted. Consider lowering --diff-threshold or "
-              f"increasing --fps-target for better COLMAP reconstruction.")
-    elif saved_count > 150:
-        print(f"WARNING: {saved_count} frames may slow down COLMAP. Consider lowering --fps-target "
-              f"or raising --diff-threshold.")
+        print(f"WARNING: Only {saved_count} frames extracted. Consider lowering --diff-threshold "
+              f"or increasing --fps-target.")
+    elif saved_count > 400:
+        print(f"WARNING: {saved_count} frames — exhaustive matching will be slow. "
+              f"Consider raising --diff-threshold or using --matching vocab_tree.")
     else:
         print(f"Frame count looks good for 3DGS ({saved_count} frames).")
 
