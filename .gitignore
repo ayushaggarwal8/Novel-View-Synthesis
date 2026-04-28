@@ -225,3 +225,5 @@ outputs/
 diffusion_nvs/weights/
 diffusion_nvs/outputs/
 diffusion_nvs/inputs/
+
+PIPELINE.md
