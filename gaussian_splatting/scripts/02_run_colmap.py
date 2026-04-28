@@ -63,18 +63,6 @@ def sequential_matching(db_path: str, use_gpu: bool, overlap: int = 10):
     ], f"Sequential feature matching (overlap={overlap})")
 
 
-def vocab_tree_matching(db_path: str, use_gpu: bool, vocab_tree_path: str,
-                        num_nearest_neighbors: int = 20):
-    """Vocabulary tree matching — handles cuts and large image sets well."""
-    run_cmd([
-        "colmap", "vocab_tree_matcher",
-        "--database_path", db_path,
-        "--VocabTreeMatching.vocab_tree_path", vocab_tree_path,
-        "--VocabTreeMatching.num_images",      str(num_nearest_neighbors),
-        "--FeatureMatching.use_gpu",           "1" if use_gpu else "0",
-        "--FeatureMatching.guided_matching",   "1",
-    ], f"Vocabulary tree matching (top-{num_nearest_neighbors} neighbors per image)")
-
 
 def run_mapper(db_path: str, image_dir: str, sparse_dir: str):
     Path(sparse_dir).mkdir(parents=True, exist_ok=True)
@@ -180,14 +168,11 @@ def parse_args():
     parser.add_argument("--gsplat-input", default="data/gsplat_input",
                         help="Output directory for undistorted gsplat-ready data")
     parser.add_argument("--matching",
-                        choices=["auto", "sequential", "exhaustive", "vocab_tree"],
+                        choices=["auto", "sequential", "exhaustive"],
                         default="auto",
-                        help="Matching strategy (default: auto — exhaustive ≤400 images, vocab_tree >400)")
+                        help="Matching strategy (default: auto — exhaustive ≤400 images, sequential >400)")
     parser.add_argument("--matching-overlap", type=int, default=10,
                         help="Sequential matching overlap (default: 10)")
-    parser.add_argument("--vocab-tree", default=None,
-                        help="Path to COLMAP vocab tree .bin file (required for vocab_tree matching). "
-                             "Download: https://demuc.de/colmap/vocab_tree_flickr100K_words32K.bin")
     parser.add_argument("--no-gpu", action="store_true",
                         help="Disable GPU for feature extraction/matching")
     return parser.parse_args()
@@ -228,23 +213,13 @@ def main():
     # 2. Matching — auto-select based on image count
     matching = args.matching
     if matching == "auto":
-        if n_images <= 400:
-            matching = "exhaustive"
-        else:
-            matching = "vocab_tree"
+        matching = "exhaustive" if n_images <= 400 else "sequential"
         print(f"\nAuto-selected '{matching}' matching for {n_images} images.")
 
     if matching == "sequential":
         sequential_matching(db_path, use_gpu, overlap=args.matching_overlap)
     elif matching == "exhaustive":
         exhaustive_matching(db_path, use_gpu)
-    elif matching == "vocab_tree":
-        vocab_tree = args.vocab_tree
-        if not vocab_tree or not Path(vocab_tree).exists():
-            print("ERROR: --vocab-tree path required for vocab_tree matching.")
-            print("  Download: https://demuc.de/colmap/vocab_tree_flickr100K_words32K.bin")
-            sys.exit(1)
-        vocab_tree_matching(db_path, use_gpu, vocab_tree)
 
     # 3. Sparse reconstruction
     run_mapper(db_path, image_dir, sparse_dir)

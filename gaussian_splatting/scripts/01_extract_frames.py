@@ -116,7 +116,7 @@ def extract_frames(video_path: str, output_dir: str, fps_target: float, max_fram
               f"or increasing --fps-target.")
     elif saved_count > 400:
         print(f"WARNING: {saved_count} frames — exhaustive matching will be slow. "
-              f"Consider raising --diff-threshold or using --matching vocab_tree.")
+              f"Consider raising --diff-threshold or using --matching sequential.")
     else:
         print(f"Frame count looks good for 3DGS ({saved_count} frames).")
 
